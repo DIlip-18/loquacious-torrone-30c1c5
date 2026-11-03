@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>FinTrack – Personal Finance Manager</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{--bg:#f4f6fb;--sf:#fff;--sf2:#eef2f9;--tx:#0f172a;--mu:#64748b;--bd:#e2e8f0;--ac:#2563eb;--ac2:#0ea5e9;--side:#0b1b3a;--sh:0 4px 20px rgba(15,23,42,.06)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a1020;--sf:#111a30;--sf2:#18233f;--tx:#e8eefc;--mu:#8b9bbd;--bd:#223052;--side:#060d1f;--sh:0 4px 20px rgba(0,0,0,.35)}}
+:root[data-theme="dark"]{--bg:#0a1020;--sf:#111a30;--sf2:#18233f;--tx:#e8eefc;--mu:#8b9bbd;--bd:#223052;--side:#060d1f;--sh:0 4px 20px rgba(0,0,0,.35)}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--tx);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px}
+.app{display:grid;grid-template-columns:232px 1fr;min-height:100%;padding-top:env(safe-area-inset-top,0px)}
+aside{background:linear-gradient(180deg,var(--side),#10285a);color:#cfd9f5;padding:20px 12px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:4px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.15rem;color:#fff;padding:0 10px 18px}
+.brand i{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--ac),var(--ac2));display:grid;place-items:center;font-style:normal;animation:pulse 3s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 8px rgba(14,165,233,.15)}}
+aside button{all:unset;cursor:pointer;padding:10px 12px;border-radius:10px;display:flex;gap:10px;align-items:center;transition:.2s;position:relative}
+aside button:hover{background:rgba(255,255,255,.08);transform:translateX(3px)}
+aside button.on{background:rgba(255,255,255,.14);color:#fff;font-weight:600}
+aside button.on::before{content:"";position:absolute;left:-12px;top:8px;bottom:8px;width:4px;border-radius:4px;background:var(--ac2)}
+.foot{margin-top:auto;font-size:.72rem;color:#7d8fb8;padding:10px}
+main{padding:20px 24px 40px;min-width:0}
+.bar-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+h1{font-size:1.4rem;margin:0}.sub{color:var(--mu);font-size:.85rem;margin-top:2px}
+.ctl{display:flex;gap:6px;align-items:center}
+input,select,button,textarea{font:inherit;color:var(--tx);background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:9px 11px;min-width:0}
+input:focus,select:focus{outline:2px solid var(--ac);outline-offset:-1px}
+main button{cursor:pointer;background:var(--ac);color:#fff;border:0;font-weight:600;transition:.2s}
+main button:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 6px 16px rgba(37,99,235,.3)}
+main button.g{background:var(--sf);color:var(--tx);border:1px solid var(--bd);box-shadow:none}
+.card,.k{background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:16px;box-shadow:var(--sh)}
+.card h2{font-size:.95rem;margin:0 0 12px;font-weight:700}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:14px}
+.k{position:relative;transition:.25s}.k:hover{transform:translateY(-3px)}
+.k::before{content:"";position:absolute;left:16px;top:16px;width:9px;height:9px;border-radius:50%;background:var(--c)}
+.k small{display:block;color:var(--mu);padding-left:18px}.k b{display:block;font-size:1.45rem;margin-top:8px;font-variant-numeric:tabular-nums}
+.grid{display:grid;grid-template-columns:1fr 1.25fr;gap:14px;margin-bottom:14px}
+.sec{display:none}.sec.on{display:block}
+.sec.on>*{animation:rise .6s cubic-bezier(.2,.8,.2,1) both}
+.sec.on>*:nth-child(2){animation-delay:.08s}.sec.on>*:nth-child(3){animation-delay:.16s}.sec.on>*:nth-child(4){animation-delay:.24s}
+@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+.kpis>*{animation:rise .6s both}.kpis>*:nth-child(2){animation-delay:.07s}.kpis>*:nth-child(3){animation-delay:.14s}.kpis>*:nth-child(4){animation-delay:.21s}.kpis>*:nth-child(5){animation-delay:.28s}.kpis>*:nth-child(6){animation-delay:.35s}
+#three{height:290px;position:relative}#three canvas{width:100%!important;height:100%!important;display:block}
+.mid{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;text-align:center}
+.mid small{color:var(--mu);display:block}.mid b{font-size:1.2rem}
+.alloc{display:grid;gap:6px;margin-top:6px}.alloc div{display:flex;justify-content:space-between;font-size:.82rem}.alloc i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:7px}
+.row{margin:10px 0}.row>div:first-child{display:flex;justify-content:space-between;font-size:.85rem}
+.bar{height:8px;background:var(--sf2);border-radius:6px;overflow:hidden;margin-top:5px}.bar i{display:block;height:100%;width:0;border-radius:6px;transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+svg.lc{width:100%;height:auto;display:block}
+.lc .ln{fill:none;stroke-width:2.6;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.6s .2s forwards}
+.lc .ar{opacity:0;animation:fade 1s 1s forwards}.lc text{fill:var(--mu);font-size:10px}
+@keyframes draw{to{stroke-dashoffset:0}}@keyframes fade{to{opacity:1}}
+.bars12{display:flex;gap:8px;height:170px;align-items:flex-end}
+.bars12>div{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;gap:4px;min-width:0}
+.bars12 .p{display:flex;gap:2px;align-items:flex-end;height:100%;width:100%;justify-content:center}.bars12 .p i{width:40%;border-radius:4px 4px 0 0;transition:height 1.1s cubic-bezier(.2,.8,.2,1);height:0}
+.bars12 span{font-size:.68rem;color:var(--mu)}
+form{display:grid;grid-template-columns:1fr 1fr;gap:8px}form .full{grid-column:1/-1}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:.85rem}th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--bd);white-space:nowrap}th{color:var(--mu);font-weight:600;font-size:.75rem;text-transform:uppercase;letter-spacing:.04em}
+tbody tr{transition:background .2s}tbody tr:hover{background:var(--sf2)}
+.tag{padding:3px 10px;border-radius:20px;font-size:.72rem;color:#fff}
+main button.x{background:none;color:var(--mu);padding:2px 8px;box-shadow:none}main button.x:hover{color:#ef4444;box-shadow:none}
+.empty{color:var(--mu);padding:16px;text-align:center}
+textarea{width:100%;height:150px;font-family:monospace;font-size:.78rem}.msg{font-size:.85rem;color:var(--ac);margin-top:8px}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+@media(max-width:860px){.app{grid-template-columns:1fr}aside{position:fixed;bottom:0;top:auto;height:auto;width:100%;flex-direction:row;overflow-x:auto;z-index:20;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));gap:2px}.brand,.foot{display:none}aside button{flex-direction:column;gap:2px;font-size:.68rem;padding:6px 10px;white-space:nowrap}aside button.on::before{display:none}main{padding:14px 12px 90px}.grid{grid-template-columns:1fr}form{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside id="nav"><div class="brand"><i>₹</i>FinTrack</div></aside>
+<main>
+ <div class="bar-top">
+  <div><h1 id="ttl">Overview</h1><div class="sub" id="sub"></div></div>
+  <div class="ctl" id="mctl"><button class="g" id="prev">◀</button><input type="month" id="month"><button class="g" id="next">▶</button><button class="g" id="theme" title="Theme">🌓</button></div>
+ </div>
+
+ <section class="sec" id="s-dash">
+  <div class="kpis" id="kpis"></div>
+  <div class="grid">
+   <div class="card"><h2>Cash-flow allocation</h2><div id="three"><div class="mid"><div><small>Money left</small><b id="mid">₹0</b></div></div></div><div class="alloc" id="alloc"></div></div>
+   <div class="card"><h2>Income vs outflow · last 6 months</h2><div id="lc"></div>
+    <h2 style="margin-top:14px">Top spending</h2><div id="spend"></div></div>
+  </div>
+  <div class="card"><h2>Recent transactions</h2><div class="tw" id="recent"></div></div>
+ </section>
+ <section class="sec" id="s-grp"></section>
+ <section class="sec" id="s-rep"></section>
+ <section class="sec" id="s-set"></section>
+</main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+// ===== OPTIONAL: paste Supabase keys here (or in Settings) =====
+const SUPABASE_URL='';
+const SUPABASE_ANON_KEY='';
+// ================================================================
+const T={
+ income:{l:'Income',c:'#16a34a',cats:['Salary','Business','Interest','Other income']},
+ expense:{l:'Expense',c:'#ef4444',cats:['Food','Rent','Transport','Bills','Shopping','Health','Fun','Other']},
+ rd:{l:'RD',c:'#2563eb',cats:['RD deposit']},
+ fd:{l:'FD',c:'#7c3aed',cats:['FD deposit']},
+ fdnon:{l:'FD Non-cumulative',c:'#f59e0b',cats:['FD Non-cumulative']},
+ given:{l:'Given to others',c:'#ec4899',cats:['Family','Friends','Charity','Loan']},
+ office:{l:'Office',c:'#0891b2',cats:['Travel','Food','Supplies','Internet/Phone','Client meeting','Software','Other office']}
+};
+const KEYS=Object.keys(T);
+const TABS=[['dash','📊','Overview'],['income','💵','Income'],['expense','🛒','Expenses'],['invest','🏦','RD / FD'],['given','🤝','Given'],['office','🏢','Office'],['rep','📈','Reports'],['set','⚙️','Settings']];
+const G={income:['income'],expense:['expense'],invest:['rd','fd','fdnon'],given:['given'],office:['office']};
+const ST={pending:'⏳ Pending',received:'✅ Received',none:'— Not claimable'};
+const $=s=>document.querySelector(s);
+const fmt=n=>'₹'+Math.round(n).toLocaleString('en-IN');
+const esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const uid=()=>crypto.randomUUID?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c=='x'?r:(r&3|8)).toString(16)});
+const isUuid=s=>/^[0-9a-f-]{36}$/.test(String(s));
+const today=()=>new Date().toISOString().slice(0,10);
+let tx=[],month=today().slice(0,7),tab='dash',sb=null,user=null,msg='',year=new Date().getFullYear();
+try{tx=JSON.parse(localStorage.getItem('mm_tx')||'[]');tx.forEach(x=>{if(!isUuid(x.id))x.id=uid();if(!x.status)x.status=x.type==='office'?'pending':'none'})}catch(e){}
+const saveLocal=()=>{try{localStorage.setItem('mm_tx',JSON.stringify(tx))}catch(e){}};
+const cfg=()=>{let u=SUPABASE_URL,k=SUPABASE_ANON_KEY;try{u=u||localStorage.getItem('mm_sb_url')||'';k=k||localStorage.getItem('mm_sb_key')||''}catch(e){}return{u,k}};
+
+// ===== Supabase =====
+async function sbInit(){const{u,k}=cfg();if(!u||!k||!window.supabase)return;
+ try{sb=supabase.createClient(u,k);const{data}=await sb.auth.getSession();user=data.session&&data.session.user;
+  sb.auth.onAuthStateChange((_e,s)=>{user=s&&s.user;if(user)pull();else if(tab==='set')drawSet()});if(user)await pull();else if(tab==='set')drawSet()}catch(e){msg='Supabase error: '+e.message}}
+async function pull(){const{data,error}=await sb.from('transactions').select('*').order('date');
+ if(error){msg='Load failed: '+error.message;if(tab==='set')drawSet();return}
+ tx=data.map(r=>({...r,amt:+r.amt}));saveLocal();msg='☁️ Synced '+tx.length+' entries';draw()}
+const cloud=()=>sb&&user;
+async function cAdd(e){if(!cloud())return;const{error}=await sb.from('transactions').insert({id:e.id,date:e.date,type:e.type,cat:e.cat,amt:e.amt,note:e.note,status:e.status});if(error)alert('Cloud save failed: '+error.message)}
+async function cDel(id){if(cloud())await sb.from('transactions').delete().eq('id',id)}
+async function cSt(id,s){if(cloud())await sb.from('transactions').update({status:s}).eq('id',id)}
+
+// ===== helpers =====
+const sum=(a,t)=>a.filter(x=>x.type===t).reduce((p,c)=>p+c.amt,0);
+function calc(a){const s={};KEYS.forEach(k=>s[k]=sum(a,k));s.invest=s.rd+s.fd+s.fdnon;
+ s.offRec=a.filter(x=>x.type==='office'&&x.status==='received').reduce((p,c)=>p+c.amt,0);
+ s.offPend=a.filter(x=>x.type==='office'&&x.status==='pending').reduce((p,c)=>p+c.amt,0);
+ s.out=s.expense+s.invest+s.given+s.office;s.left=s.income+s.offRec-s.out;return s}
+function tween(el,to){if(!el)return;const f=el._v||0;el._v=to;const t0=performance.now();(function s(t){const p=Math.min(1,(t-t0)/1000),e=1-Math.pow(1-p,3);el.textContent=fmt(f+(to-f)*e);if(p<1)requestAnimationFrame(s)})(t0)}
+function dl(n,t,m){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:m}));a.download=n;a.click()}
+const addM=(m,d)=>{const[y,mo]=m.split('-').map(Number);const dt=new Date(y,mo-1+d,1);return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')};
+const mlabel=k=>new Date(k+'-01').toLocaleString('en',{month:'short'});
+function barsHtml(ents,color,tot){return ents.length?ents.map(([c,v])=>`<div class="row"><div><span>${esc(c)}</span><b>${fmt(v)} · ${Math.round(v/tot*100)}%</b></div><div class="bar"><i data-w="${v/ents[0][1]*100}" style="background:${color}"></i></div></div>`).join(''):'<div class="empty">No data yet</div>'}
+const grow=()=>requestAnimationFrame(()=>requestAnimationFrame(()=>{document.querySelectorAll('.bar i').forEach(i=>i.style.width=i.dataset.w+'%');document.querySelectorAll('.bars12 i').forEach(i=>i.style.height=i.dataset.h+'%')}));
+function barsPair(list){const m=Math.max(1,...list.flatMap(d=>[d.inc,d.out]));return`<div class="bars12">${list.map(d=>`<div><div class="p"><i data-h="${d.inc/m*100}" style="background:#16a34a"></i><i data-h="${d.out/m*100}" style="background:#ef4444"></i></div><span>${d.l}</span></div>`).join('')}</div>`}
+function lineChart(list){const W=560,H=190,pl=10,pb=22,m=Math.max(1,...list.flatMap(d=>[d.inc,d.out])),n=list.length;
+ const pt=(v,i)=>[pl+i*(W-2*pl)/(n-1),H-pb-(v/m)*(H-pb-14)];
+ const path=k=>list.map((d,i)=>{const[x,y]=pt(d[k],i);return(i?'L':'M')+x.toFixed(1)+' '+y.toFixed(1)}).join(' ');
+ const area=k=>path(k)+` L${W-pl} ${H-pb} L${pl} ${H-pb} Z`;
+ return`<svg class="lc" viewBox="0 0 ${W} ${H}"><defs><linearGradient id="gi" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16a34a" stop-opacity=".3"/><stop offset="1" stop-color="#16a34a" stop-opacity="0"/></linearGradient><linearGradient id="go" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ef4444" stop-opacity=".25"/><stop offset="1" stop-color="#ef4444" stop-opacity="0"/></linearGradient></defs>
+ <path class="ar" d="${area('inc')}" fill="url(#gi)"/><path class="ar" d="${area('out')}" fill="url(#go)"/>
+ <path class="ln" pathLength="1" d="${path('inc')}" stroke="#16a34a"/><path class="ln" pathLength="1" d="${path('out')}" stroke="#ef4444"/>
+ ${list.map((d,i)=>`<text x="${pt(0,i)[0]}" y="${H-5}" text-anchor="middle">${d.l}</text>`).join('')}</svg>`}
+function txTable(rows,opt){return`<table><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Note</th><th>Amount</th>${opt?'<th>Refund</th><th></th>':''}</tr></thead><tbody>${rows.length?rows.map(x=>`<tr><td>${x.date}</td><td><span class="tag" style="background:${T[x.type].c}">${T[x.type].l}</span></td><td>${esc(x.cat)}</td><td>${esc(x.note)}</td><td><b>${x.type==='income'?'+':''}${fmt(x.amt)}</b></td>${opt?`<td>${x.type==='office'?`<button class="g" data-st="${x.id}">${ST[x.status]||ST.none}</button>`:''}</td><td><button class="x" data-del="${x.id}">✕</button></td>`:''}</tr>`).join(''):'<tr><td colspan="7" class="empty">No transactions</td></tr>'}</tbody></table>`}
+
+// ===== nav =====
+$('#nav').insertAdjacentHTML('beforeend',TABS.map(([k,i,l])=>`<button data-t="${k}"><span>${i}</span>${l}</button>`).join('')+'<div class="foot">Your data is private.<br>Stored locally · optional cloud sync</div>');
+$('#nav').onclick=e=>{const b=e.target.closest('button');if(b){tab=b.dataset.t;draw()}};
+$('#month').value=month;
+$('#month').onchange=e=>{month=e.target.value||month;draw()};
+$('#prev').onclick=()=>{month=addM(month,-1);$('#month').value=month;draw()};
+$('#next').onclick=()=>{month=addM(month,1);$('#month').value=month;draw()};
+$('#theme').onclick=()=>{const r=document.documentElement;r.dataset.theme=(r.dataset.theme==='dark'||(!r.dataset.theme&&matchMedia('(prefers-color-scheme:dark)').matches))?'light':'dark'};
+
+function draw(){
+ document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
+ const sec=G[tab]?'grp':tab,nm=TABS.find(t=>t[0]===tab)[2];
+ document.querySelectorAll('.sec').forEach(s=>{const on=s.id==='s-'+sec;if(on&&!s.classList.contains('on')){s.classList.add('on')}else if(!on)s.classList.remove('on')});
+ $('#ttl').textContent=nm;$('#sub').textContent=['rep','set'].includes(tab)?'':new Date(month+'-01').toLocaleString('en',{month:'long',year:'numeric'});
+ $('#mctl').style.visibility=['set','rep'].includes(tab)?'hidden':'visible';
+ if(tab==='dash'){drawDash();setTimeout(size,30)}else if(G[tab])drawGrp();else if(tab==='rep')drawRep();else drawSet();
+}
+
+// ===== overview =====
+let segs=[];
+function drawDash(){
+ const cur=tx.filter(x=>x.date.startsWith(month)),s=calc(cur),rate=s.income?Math.round(s.invest/s.income*100):0;
+ const cards=[['Total income',s.income,'#16a34a'],['Expenses',s.expense,'#ef4444'],[`Investments · ${rate}% of income`,s.invest,'#2563eb'],['Given to others',s.given,'#ec4899'],['Office · refund pending',s.offPend,'#0891b2'],['Net position',s.left,s.left>=0?'#0d9488':'#f97316']];
+ const K=$('#kpis');if(K.children.length!==cards.length)K.innerHTML=cards.map(c=>`<div class="k"><small></small><b>0</b></div>`).join('');
+ [...K.children].forEach((el,i)=>{el.style.setProperty('--c',cards[i][2]);el.querySelector('small').textContent=cards[i][0];tween(el.querySelector('b'),cards[i][1])});
+ tween($('#mid'),s.left);
+ segs=[['expense',s.expense],['rd',s.rd],['fd',s.fd],['fdnon',s.fdnon],['given',s.given],['office',s.office]].map(([k,v])=>({n:T[k].l,c:T[k].c,v}));
+ if(s.left>0)segs.push({n:'Remaining',c:'#94a3b8',v:s.left});
+ const tot=segs.reduce((p,c)=>p+c.v,0);buildDonut(tot);
+ $('#alloc').innerHTML=segs.filter(g=>g.v>0).map(g=>`<div><span><i style="background:${g.c}"></i>${g.n}</span><b>${fmt(g.v)} · ${Math.round(g.v/tot*100)}%</b></div>`).join('')||'<div class="empty">Add entries to see allocation</div>';
+ const cats={};cur.filter(x=>x.type==='expense').forEach(x=>cats[x.cat]=(cats[x.cat]||0)+x.amt);
+ $('#spend').innerHTML=barsHtml(Object.entries(cats).sort((a,b)=>b[1]-a[1]).slice(0,4),'#ef4444',s.expense);
+ $('#lc').innerHTML=lineChart(Array.from({length:6},(_,i)=>{const k=addM(month,i-5),a=calc(tx.filter(x=>x.date.startsWith(k)));return{l:mlabel(k),inc:a.income+a.offRec,out:a.out}}));
+ $('#recent').innerHTML=txTable([...cur].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,6),false);grow();
+}
+
+// ===== group tabs =====
+function drawGrp(){
+ const keys=G[tab],cur=tx.filter(x=>x.date.startsWith(month)&&keys.includes(x.type)),tot=cur.reduce((p,c)=>p+c.amt,0),isOff=tab==='office',col=T[keys[0]].c;
+ const cats={};cur.forEach(x=>{const k=keys.length>1?T[x.type].l:x.cat;cats[k]=(cats[k]||0)+x.amt});
+ let cards=`<div class="k" style="--c:${col}"><small>Total this month</small><b id="gt">0</b></div>`;
+ if(isOff){const s=calc(cur);cards+=`<div class="k" style="--c:#f59e0b"><small>Refund pending</small><b>${fmt(s.offPend)}</b></div><div class="k" style="--c:#16a34a"><small>Refund received</small><b>${fmt(s.offRec)}</b></div>`}
+ else if(keys.length>1)cards+=keys.map(k=>`<div class="k" style="--c:${T[k].c}"><small>${T[k].l}</small><b>${fmt(sum(cur,k))}</b></div>`).join('');
+ else cards+=`<div class="k" style="--c:${col}"><small>Entries</small><b>${cur.length}</b></div>`;
+ $('#s-grp').innerHTML=`<div class="kpis">${cards}</div>
+ <div class="grid"><div class="card"><h2>New entry</h2><form id="f"><select id="type" class="full" ${keys.length<2?'style="display:none"':''}>${keys.map(k=>`<option value="${k}">${T[k].l}</option>`).join('')}</select>
+  <select id="cat"></select><input id="amt" type="number" min="0" step="0.01" placeholder="Amount (₹)" required>
+  <input id="date" type="date" required value="${month===today().slice(0,7)?today():month+'-01'}"><input id="note" placeholder="Description / party / project">
+  ${isOff?`<select id="status" class="full"><option value="pending">Reimbursement pending</option><option value="received">Already reimbursed</option><option value="none">Not claimable</option></select>`:''}
+  <button class="full">Save entry</button></form></div>
+  <div class="card"><h2>Breakdown</h2>${barsHtml(Object.entries(cats).sort((a,b)=>b[1]-a[1]),col,tot||1)}</div></div>
+ <div class="card"><h2>Entries</h2><div class="tw">${txTable([...cur].sort((a,b)=>b.date.localeCompare(a.date)),true)}</div></div>`;
+ tween($('#gt'),tot);
+ const fc=()=>$('#cat').innerHTML=T[$('#type').value||keys[0]].cats.map(c=>`<option>${c}</option>`).join('');
+ $('#type').onchange=fc;fc();
+ $('#f').onsubmit=e=>{e.preventDefault();const en={id:uid(),date:$('#date').value,type:$('#type').value,cat:$('#cat').value,amt:+$('#amt').value,note:$('#note').value,status:isOff?$('#status').value:'none'};
+  tx.push(en);saveLocal();cAdd(en);month=en.date.slice(0,7);$('#month').value=month;draw()};
+ grow();
+}
+document.addEventListener('click',e=>{
+ const d=e.target.closest('[data-del]');if(d){const id=d.dataset.del;tx=tx.filter(x=>x.id!==id);saveLocal();cDel(id);draw();return}
+ const s=e.target.closest('[data-st]');if(s){const x=tx.find(y=>y.id===s.dataset.st),o=['pending','received','none'];x.status=o[(o.indexOf(x.status)+1)%3];saveLocal();cSt(x.id,x.status);draw()}
+});
+
+// ===== reports =====
+function drawRep(){
+ const rows=Array.from({length:12},(_,i)=>{const k=year+'-'+String(i+1).padStart(2,'0');return{k,l:mlabel(k),s:calc(tx.filter(x=>x.date.startsWith(k)))}}),Y=calc(tx.filter(x=>x.date.startsWith(year+'-')));
+ const kp=[['Income',Y.income,'#16a34a'],['Expenses',Y.expense,'#ef4444'],['Invested',Y.invest,'#2563eb'],['Given',Y.given,'#ec4899'],['Office',Y.office,'#0891b2'],['Saved / left',Y.left,'#0d9488']];
+ $('#s-rep').innerHTML=`<div class="ctl" style="margin-bottom:12px"><button class="g" id="yp">◀</button><h2 style="margin:0 10px">${year} annual statement</h2><button class="g" id="yn">▶</button></div>
+ <div class="kpis">${kp.map(c=>`<div class="k" style="--c:${c[2]}"><small>${c[0]}</small><b>${fmt(c[1])}</b></div>`).join('')}</div>
+ <div class="card" style="margin-bottom:14px"><h2>Monthly income vs outflow</h2>${barsPair(rows.map(r=>({l:r.l,inc:r.s.income+r.s.offRec,out:r.s.out})))}</div>
+ <div class="card"><h2>Month-wise summary</h2><div class="tw"><table><thead><tr><th>Month</th><th>Income</th><th>Expense</th><th>RD</th><th>FD</th><th>FD Non</th><th>Given</th><th>Office</th><th>Net</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.l}</td><td>${fmt(r.s.income)}</td><td>${fmt(r.s.expense)}</td><td>${fmt(r.s.rd)}</td><td>${fmt(r.s.fd)}</td><td>${fmt(r.s.fdnon)}</td><td>${fmt(r.s.given)}</td><td>${fmt(r.s.office)}</td><td><b>${fmt(r.s.left)}</b></td></tr>`).join('')}</tbody></table></div></div>`;
+ $('#yp').onclick=()=>{year--;drawRep()};$('#yn').onclick=()=>{year++;drawRep()};grow();
+}
+
+// ===== settings =====
+const SQL=`create table transactions (
+  id uuid primary key,
+  user_id uuid default auth.uid(),
+  date date not null,
+  type text not null,
+  cat text,
+  amt numeric not null,
+  note text,
+  status text default 'none'
+);
+alter table transactions enable row level security;
+create policy "own rows" on transactions
+  for all using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);`;
+function drawSet(){
+ if(tab!=='set')return;const{u,k}=cfg();
+ $('#s-set').innerHTML=`<div class="grid"><div class="card"><h2>Cloud sync (Supabase)</h2>
+ <form id="sf"><input class="full" id="su" placeholder="Project URL  https://xxxx.supabase.co" value="${esc(u)}"><input class="full" id="sk" placeholder="Anon public key" value="${esc(k)}"><button class="full">Save keys &amp; reload</button></form>
+ <h2 style="margin-top:16px">${user?'Signed in: '+esc(user.email):'Account'}</h2>
+ ${user?'<div class="btns"><button id="so" class="g">Sign out</button><button id="push">Upload local data</button><button id="pl" class="g">Refresh from cloud</button></div>':
+ `<form id="af"><input id="em" type="email" placeholder="Email" required><input id="pw" type="password" placeholder="Password (6+ chars)" required><button>Sign in</button><button type="button" class="g" id="su2">Create account</button></form>`}
+ <div class="msg">${esc(msg)||(sb?'Connected to Supabase':'Not connected – data is saved only in this browser')}</div></div>
+ <div class="card"><h2>Step 1 · Run this SQL once in Supabase</h2><textarea readonly>${SQL}</textarea></div></div>
+ <div class="card"><h2>Backup &amp; restore</h2><div class="btns"><button id="ej">Export JSON</button><button id="ec" class="g">Export CSV</button><button class="g" id="im">Import JSON</button><button class="g" id="clr">Clear local data</button></div><input type="file" id="fi" accept=".json" style="display:none"></div>`;
+ $('#sf').onsubmit=e=>{e.preventDefault();try{localStorage.setItem('mm_sb_url',$('#su').value.trim());localStorage.setItem('mm_sb_key',$('#sk').value.trim())}catch(x){}location.reload()};
+ if(user){$('#so').onclick=()=>sb.auth.signOut();$('#push').onclick=async()=>{const{error}=await sb.from('transactions').upsert(tx.map(x=>({id:x.id,date:x.date,type:x.type,cat:x.cat,amt:x.amt,note:x.note,status:x.status})));msg=error?'Upload failed: '+error.message:'Uploaded '+tx.length+' entries';drawSet()};$('#pl').onclick=pull}
+ else{const auth=async up=>{if(!sb){msg='Save valid Supabase keys first';return drawSet()}const e=$('#em').value,p=$('#pw').value,r=up?await sb.auth.signUp({email:e,password:p}):await sb.auth.signInWithPassword({email:e,password:p});msg=r.error?r.error.message:(up?'Account created. Confirm email if required, then sign in.':'Signed in');drawSet()};
+  $('#af').onsubmit=e=>{e.preventDefault();auth(false)};$('#su2').onclick=()=>auth(true)}
+ $('#ej').onclick=()=>dl('fintrack-backup.json',JSON.stringify(tx,null,1),'application/json');
+ $('#ec').onclick=()=>dl('fintrack.csv','date,type,category,amount,note,status\n'+tx.map(x=>[x.date,x.type,x.cat,x.amt,'"'+String(x.note||'').replace(/"/g,'""')+'"',x.status].join(',')).join('\n'),'text/csv');
+ $('#im').onclick=()=>$('#fi').click();
+ $('#fi').onchange=e=>{const f=e.target.files[0];if(f)f.text().then(t=>{try{const a=JSON.parse(t),have=new Set(tx.map(x=>x.id));a.forEach(x=>{if(!isUuid(x.id))x.id=uid();if(!have.has(x.id))tx.push(x)});saveLocal();msg='Imported '+a.length+' entries';drawSet()}catch(x){alert('Invalid file')}})};
+ $('#clr').onclick=()=>{if(confirm('Delete all LOCAL data?')){tx=[];saveLocal();draw()}};
+}
+
+// ===== three.js : 3D donut =====
+const host=$('#three'),scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(40,1,.1,100);cam.position.set(0,0,8.5);
+const rend=new THREE.WebGLRenderer({antialias:true,alpha:true});rend.setPixelRatio(Math.min(2,devicePixelRatio));host.insertBefore(rend.domElement,host.firstChild);
+scene.add(new THREE.AmbientLight(0xffffff,.75));const dl2=new THREE.DirectionalLight(0xffffff,.9);dl2.position.set(4,6,8);scene.add(dl2);
+const tilt=new THREE.Group(),dg=new THREE.Group();tilt.add(dg);scene.add(tilt);tilt.rotation.x=-.95;
+function buildDonut(tot){while(dg.children.length){const c=dg.children[0];dg.remove(c);c.geometry.dispose();c.material.dispose()}
+ const list=tot>0?segs.filter(g=>g.v>0):[{c:'#cbd5e1',v:1}],T2=list.reduce((p,c)=>p+c.v,0);let a=0;
+ list.forEach(g=>{const arc=g.v/T2*Math.PI*2,m=new THREE.Mesh(new THREE.TorusGeometry(2.2,.55,24,80,Math.max(.02,arc-(list.length>1?.05:0))),new THREE.MeshStandardMaterial({color:g.c,roughness:.4,metalness:.2}));m.rotation.z=a;a+=arc;dg.add(m)});
+ dg.scale.setScalar(.01);dg.rotation.z=-1.2}
+let mx=0,my=0;host.addEventListener('pointermove',e=>{const r=host.getBoundingClientRect();mx=(e.clientX-r.left)/r.width-.5;my=(e.clientY-r.top)/r.height-.5});
+function size(){const w=host.clientWidth,h=host.clientHeight;if(!w)return;rend.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
+addEventListener('resize',size);
+(function loop(){requestAnimationFrame(loop);if(tab!=='dash')return;
+ const s=dg.scale.x;dg.scale.setScalar(s+(1-s)*.07);dg.rotation.z+=(0.004);
+ tilt.rotation.x+=((-.95+my*.5)-tilt.rotation.x)*.05;tilt.rotation.y+=((mx*.8)-tilt.rotation.y)*.05;
+ rend.render(scene,cam)})();
+draw();sbInit();
+</script>
+</body>
+</html>
